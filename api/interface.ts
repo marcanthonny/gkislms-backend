@@ -17,6 +17,16 @@ export default function handler(req: IncomingMessage, res: ServerResponse): void
     version: "1.0.0",
     endpoints: [
       {
+        path: "/auth/login",
+        method: "POST",
+        response: "{ token: string; user: User; expiresAt: string; }",
+      },
+      {
+        path: "/me",
+        method: "GET",
+        response: "User (requires Authorization: Bearer <token>)",
+      },
+      {
         path: "/roles",
         method: "GET",
         response: "Role[]",
@@ -34,6 +44,12 @@ export default function handler(req: IncomingMessage, res: ServerResponse): void
         label: "string",
         subtitle: "string",
         university: "string",
+      },
+      User: {
+        id: "string",
+        email: "string",
+        name: "string",
+        role: '"Student" | "Teacher" | "Admin"',
       },
     },
   });

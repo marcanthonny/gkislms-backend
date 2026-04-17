@@ -1,6 +1,14 @@
 {
   "rewrites": [
     {
+      "source": "/auth/login",
+      "destination": "/api/auth/login"
+    },
+    {
+      "source": "/me",
+      "destination": "/api/me"
+    },
+    {
       "source": "/roles",
       "destination": "/api/roles"
     },
