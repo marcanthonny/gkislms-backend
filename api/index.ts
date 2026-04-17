@@ -17,5 +17,6 @@ export default function handler(req: IncomingMessage, res: ServerResponse): void
     message: "API is running",
     docs: "/interface",
     health: "/health",
+    admin: "/admin",
   });
 }

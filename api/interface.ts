@@ -22,6 +22,11 @@ export default function handler(req: IncomingMessage, res: ServerResponse): void
         response: "{ service: string; message: string; docs: string; health: string; }",
       },
       {
+        path: "/admin",
+        method: "GET",
+        response: "HTML backend management interface",
+      },
+      {
         path: "/auth/login",
         method: "POST",
         response: "{ token: string; user: User; expiresAt: string; }",
