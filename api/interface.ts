@@ -24,7 +24,7 @@ export default function handler(req: IncomingMessage, res: ServerResponse): void
       {
         path: "/admin",
         method: "GET",
-        response: "HTML backend management interface",
+        response: "HTML backend management interface (admin login required)",
       },
       {
         path: "/auth/login",
