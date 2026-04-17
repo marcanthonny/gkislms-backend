@@ -17,6 +17,11 @@ export default function handler(req: IncomingMessage, res: ServerResponse): void
     version: "1.0.0",
     endpoints: [
       {
+        path: "/",
+        method: "GET",
+        response: "{ service: string; message: string; docs: string; health: string; }",
+      },
+      {
         path: "/auth/login",
         method: "POST",
         response: "{ token: string; user: User; expiresAt: string; }",
