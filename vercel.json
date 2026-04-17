@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/roles",
+      "destination": "/api/roles"
+    },
+    {
+      "source": "/health",
+      "destination": "/api/health"
+    },
+    {
+      "source": "/interface",
+      "destination": "/api/interface"
+    }
+  ]
+}
