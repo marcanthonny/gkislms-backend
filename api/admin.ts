@@ -64,7 +64,7 @@ function clearAdminCookie(res: ServerResponse): void {
   res.setHeader("Set-Cookie", `${ADMIN_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Secure; Max-Age=0`);
 }
 
-function getValidAdminUser(req: IncomingMessage): { email: string; name: string } | null {
+function getValidAdminUser(req: IncomingMessage): { email: string; name: string; token: string } | null {
   const token = parseCookies(req.headers.cookie)[ADMIN_COOKIE_NAME];
   if (!token) {
     return null;
@@ -75,7 +75,7 @@ function getValidAdminUser(req: IncomingMessage): { email: string; name: string 
     return null;
   }
 
-  return { email: payload.email, name: payload.name };
+  return { email: payload.email, name: payload.name, token };
 }
 
 function adminLoginPage(errorMessage?: string): string {
@@ -153,7 +153,7 @@ function adminLoginPage(errorMessage?: string): string {
 </html>`;
 }
 
-function adminPanelPage(adminName: string, adminEmail: string): string {
+function adminPanelPage(adminName: string, adminEmail: string, adminToken: string): string {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -233,12 +233,34 @@ function adminPanelPage(adminName: string, adminEmail: string): string {
       </div>
     </div>
     <div class="card">
+      <h2>Account Management</h2>
+      <p>Create accounts or change account passwords.</p>
+      <div class="row">
+        <input id="newEmail" placeholder="new user email" />
+        <input id="newName" placeholder="new user name" />
+        <input id="newPassword" placeholder="new user password" />
+        <select id="newRole">
+          <option value="Student">Student</option>
+          <option value="Teacher">Teacher</option>
+          <option value="Admin">Admin</option>
+        </select>
+        <button onclick="createAccount()">Create account</button>
+      </div>
+      <div class="row" style="margin-top: 8px;">
+        <input id="targetUserId" placeholder="target user id (leave empty for self)" />
+        <input id="oldPassword" placeholder="old password (required for self)" />
+        <input id="updatedPassword" placeholder="new password" />
+        <button onclick="changePassword()">Change password</button>
+      </div>
+    </div>
+    <div class="card">
       <h2>Response</h2>
       <pre id="output">Ready.</pre>
     </div>
   </div>
   <script>
     const baseUrl = window.location.origin;
+    const authToken = ${JSON.stringify(adminToken)};
     const output = document.getElementById("output");
     function print(data) {
       output.textContent = typeof data === "string" ? data : JSON.stringify(data, null, 2);
@@ -257,6 +279,49 @@ function adminPanelPage(adminName: string, adminEmail: string): string {
         const res = await fetch(baseUrl + "/me");
         const data = await res.json();
         print({ status: res.status, path: "/me", data });
+      } catch (err) {
+        print({ error: String(err) });
+      }
+    }
+    async function createAccount() {
+      const email = document.getElementById("newEmail").value.trim();
+      const name = document.getElementById("newName").value.trim();
+      const password = document.getElementById("newPassword").value;
+      const role = document.getElementById("newRole").value;
+      try {
+        const res = await fetch(baseUrl + "/auth/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + authToken
+          },
+          body: JSON.stringify({ email, name, password, role })
+        });
+        const data = await res.json();
+        print({ status: res.status, path: "/auth/register", data });
+      } catch (err) {
+        print({ error: String(err) });
+      }
+    }
+    async function changePassword() {
+      const userId = document.getElementById("targetUserId").value.trim();
+      const oldPassword = document.getElementById("oldPassword").value;
+      const newPassword = document.getElementById("updatedPassword").value;
+      try {
+        const res = await fetch(baseUrl + "/auth/change-password", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + authToken
+          },
+          body: JSON.stringify({
+            userId: userId || undefined,
+            oldPassword: oldPassword || undefined,
+            newPassword
+          })
+        });
+        const data = await res.json();
+        print({ status: res.status, path: "/auth/change-password", data });
       } catch (err) {
         print({ error: String(err) });
       }
@@ -314,5 +379,5 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     return;
   }
 
-  sendHtml(res, adminPanelPage(admin.name, admin.email));
+  sendHtml(res, adminPanelPage(admin.name, admin.email, admin.token));
 }

@@ -5,6 +5,8 @@ This folder contains a standalone Vercel serverless backend for LMS API endpoint
 ## API Endpoints
 
 - `POST /auth/login` -> returns auth token and basic user profile
+- `POST /auth/register` -> create new account (admin token required)
+- `POST /auth/change-password` -> change password (self or admin)
 - `GET /roles` -> returns role options used by `TopNav` and `Sidebar`
 - `GET /health` -> basic health check
 - `GET /interface` -> backend API contract/interface details
@@ -22,8 +24,11 @@ Primary response types are defined in:
 This project now includes a lightweight token-based authentication mechanism.
 
 - Login endpoint: `POST /auth/login`
+- Create account endpoint: `POST /auth/register` (admin only)
+- Change password endpoint: `POST /auth/change-password`
 - Protected endpoint: `GET /me` with `Authorization: Bearer <token>`
 - Token signing: HMAC SHA-256 using `AUTH_SECRET` env variable (falls back to a dev secret locally)
+- Admin UI (`/admin`) now includes account creation and password update tools
 
 ### Demo credentials
 

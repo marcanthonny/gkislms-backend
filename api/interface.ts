@@ -32,6 +32,16 @@ export default function handler(req: IncomingMessage, res: ServerResponse): void
         response: "{ token: string; user: User; expiresAt: string; }",
       },
       {
+        path: "/auth/register",
+        method: "POST",
+        response: "User (admin token required)",
+      },
+      {
+        path: "/auth/change-password",
+        method: "POST",
+        response: "{ message: string; userId: string; }",
+      },
+      {
         path: "/me",
         method: "GET",
         response: "User (requires Authorization: Bearer <token>)",
